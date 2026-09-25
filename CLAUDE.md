@@ -86,7 +86,8 @@ When adding a filter: add the field to `ViewFilters`, a default in
 - Enum values are AniList's (`SIDE_STORY`, `NOT_YET_RELEASED`). Convert to
   display text only with `label()` from `core/labels.ts`; add overrides there.
 - Plain CSS in `src/style.css` using the custom properties on `:root`. No CSS
-  framework. Colors: `--sakura` marks unwatched things, `--teal` marks entries
+  framework. All colors live in the two `:root` blocks at the top; don't write a
+  color value anywhere else. `--accent` marks unwatched things, `--seen` marks entries
   already on the user's list; keep those meanings. Dark mode comes from
   `prefers-color-scheme`, so every new color needs both values.
 - UI copy: sentence case, plain words, errors say what happened and what to do.
