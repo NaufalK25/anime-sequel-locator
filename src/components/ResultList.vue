@@ -36,23 +36,24 @@ const total = computed(() =>
       <header>
         <h2>{{ fr.title }}</h2>
         <!-- one dot per entry: filled = watched, open = still to find -->
-        <div
-          class="rail"
-          :aria-label="`${fr.watched.length} of ${fr.watched.length + fr.suggestions.length} watched`"
-        >
+        <div class="rail" aria-hidden="true">
           <span
             v-for="w in fr.watched"
             :key="w.id"
             class="dot seen"
-            :title="w.title"
+            :title="`Watched: ${w.title}`"
           />
           <span
             v-for="s in fr.suggestions"
             :key="s.media.id"
             class="dot"
-            :title="s.media.title"
+            :title="`Not watched: ${s.media.title}`"
           />
         </div>
+        <span class="rail-count">
+          {{ fr.watched.length }} of
+          {{ fr.watched.length + fr.suggestions.length }} watched
+        </span>
         <button type="button" class="link" @click="excludeFranchise(fr.key)">
           Hide franchise
         </button>
