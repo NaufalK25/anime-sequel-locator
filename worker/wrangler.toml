@@ -1,0 +1,7 @@
+name = "sequel-locator-mal-proxy"
+main = "mal-proxy.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+# comma-separated; add your deployed site's origin here
+ALLOWED_ORIGINS = "http://localhost:5173"
