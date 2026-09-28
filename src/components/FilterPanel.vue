@@ -18,7 +18,7 @@ const keywords = computed({
   <!-- pinned below the sticky header (--header-h, set in App.vue) and scrolls
        on its own, so long result lists don't have to be scrolled first -->
   <div
-    class="sticky top-(--header-h) flex max-h-[calc(100dvh-var(--header-h)-16px)] flex-col gap-4.5 overflow-y-auto overscroll-contain pr-1.5 [scrollbar-color:var(--line)_transparent] scrollbar-thin max-[820px]:static max-[820px]:max-h-none max-[820px]:overflow-visible max-[820px]:pr-0"
+    class="sticky top-(--header-h) flex max-h-[calc(100dvh-var(--header-h)-16px)] flex-col gap-4.5 overflow-y-auto overscroll-contain pr-1.5 max-[820px]:static max-[820px]:max-h-none max-[820px]:overflow-visible max-[820px]:pr-0"
   >
     <input
       v-model="f.search"
