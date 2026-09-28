@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, nextTick, useTemplateRef } from "vue";
 import EntryCard from "./EntryCard.vue";
 import EntryRow from "./EntryRow.vue";
 import { useLocator } from "../composables/useLocator";
-import { useSettings } from "../composables/useSettings";
+import { useSettings, type ResultView } from "../composables/useSettings";
 import { vTooltip } from "../directives/tooltip";
 
 const { state, franchises, visible } = useLocator();
@@ -11,6 +11,24 @@ const { settings, excludeFranchise } = useSettings();
 const total = computed(() =>
   visible.value.reduce((n, f) => n + f.suggestions.length, 0),
 );
+
+const bar = useTemplateRef("bar");
+const articles = useTemplateRef("articles");
+
+// Switching layout changes every franchise's height, so the page would jump.
+// Keep the franchise at the top of the view where it was.
+async function setView(view: ResultView) {
+  if (settings.view === view) return;
+  const barBottom = bar.value?.getBoundingClientRect().bottom ?? 0;
+  const anchor = articles.value?.find(
+    (a) => a.getBoundingClientRect().bottom > barBottom,
+  );
+  const before = anchor?.getBoundingClientRect().top;
+  settings.view = view;
+  if (!anchor || before === undefined) return;
+  await nextTick();
+  window.scrollBy(0, anchor.getBoundingClientRect().top - before);
+}
 
 const toggleClass =
   "rounded-full px-3.5 py-1 text-[13px] text-muted transition-colors duration-150 hover:text-ink aria-pressed:bg-surface aria-pressed:font-bold aria-pressed:text-ink";
@@ -39,9 +57,12 @@ const toggleClass =
       </p>
     </div>
 
+    <!-- pinned below the sticky header (see App.vue) so the layout can be
+         switched mid-scroll; the header isn't sticky on narrow screens -->
     <div
       v-if="visible.length"
-      class="mb-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-muted"
+      ref="bar"
+      class="sticky top-(--header-h) z-5 mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 bg-paper py-2 text-muted max-[820px]:top-0"
     >
       <p>{{ total }} entries across {{ visible.length }} franchises</p>
       <div
@@ -53,7 +74,7 @@ const toggleClass =
           type="button"
           :class="toggleClass"
           :aria-pressed="settings.view === 'cards'"
-          @click="settings.view = 'cards'"
+          @click="setView('cards')"
         >
           Cards
         </button>
@@ -61,14 +82,14 @@ const toggleClass =
           type="button"
           :class="toggleClass"
           :aria-pressed="settings.view === 'list'"
-          @click="settings.view = 'list'"
+          @click="setView('list')"
         >
           List
         </button>
       </div>
     </div>
 
-    <article v-for="fr in visible" :key="fr.key" class="mb-10">
+    <article v-for="fr in visible" :key="fr.key" ref="articles" class="mb-10">
       <header class="mb-3.5 flex flex-wrap items-center gap-x-4 gap-y-2">
         <h2
           class="basis-full font-display text-[1.35rem] leading-[1.2] font-extrabold"
