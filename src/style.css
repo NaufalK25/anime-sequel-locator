@@ -287,8 +287,41 @@ button:disabled {
   padding: 40px 0;
 }
 .summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
   color: var(--muted);
   margin: 0 0 20px;
+}
+.summary p {
+  margin: 0;
+}
+.view-toggle {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+}
+.view-toggle button {
+  border: 0;
+  background: none;
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-size: 13px;
+  color: var(--muted);
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.view-toggle button:hover {
+  color: var(--ink);
+}
+.view-toggle button[aria-pressed="true"] {
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
 }
 
 .franchise {
@@ -393,6 +426,71 @@ button:disabled {
   margin-top: auto;
   padding-top: 6px;
   font-size: 13px;
+}
+
+/* Compact list view: one line per entry, no covers. */
+.entry-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background: var(--surface);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.entry-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr) minmax(
+      0,
+      1.6fr
+    ) auto auto;
+  align-items: baseline;
+  gap: 4px 16px;
+  padding: 7px 12px;
+  border-left: 3px solid var(--accent);
+  font-size: 13px;
+}
+.entry-row + .entry-row {
+  border-top: 1px solid var(--line);
+}
+.entry-row.upcoming {
+  border-left-style: dashed;
+}
+.entry-row .entry-title,
+.entry-row .via {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.entry-row .entry-title {
+  font-size: 14px;
+}
+.entry-row .on-list {
+  grid-column: 4;
+}
+.entry-row .entry-actions {
+  grid-column: 5;
+  margin: 0;
+  padding: 0;
+}
+@media (max-width: 640px) {
+  .entry-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .entry-row .entry-title {
+    grid-column: 1 / -1;
+    white-space: normal;
+  }
+  .entry-row .facts,
+  .entry-row .via {
+    grid-column: 1;
+  }
+  .entry-row .on-list {
+    grid-column: 1;
+  }
+  .entry-row .entry-actions {
+    grid-column: 2;
+    grid-row: 2;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

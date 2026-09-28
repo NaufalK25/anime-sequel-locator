@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import EntryCard from "./EntryCard.vue";
+import EntryRow from "./EntryRow.vue";
 import { useLocator } from "../composables/useLocator";
 import { useSettings } from "../composables/useSettings";
 
 const { state, franchises, visible } = useLocator();
-const { excludeFranchise } = useSettings();
+const { settings, excludeFranchise } = useSettings();
 const total = computed(() =>
   visible.value.reduce((n, f) => n + f.suggestions.length, 0),
 );
@@ -28,9 +29,25 @@ const total = computed(() =>
       </p>
     </div>
 
-    <p v-if="visible.length" class="summary">
-      {{ total }} entries across {{ visible.length }} franchises
-    </p>
+    <div v-if="visible.length" class="summary">
+      <p>{{ total }} entries across {{ visible.length }} franchises</p>
+      <div class="view-toggle" role="group" aria-label="Layout">
+        <button
+          type="button"
+          :aria-pressed="settings.view === 'cards'"
+          @click="settings.view = 'cards'"
+        >
+          Cards
+        </button>
+        <button
+          type="button"
+          :aria-pressed="settings.view === 'list'"
+          @click="settings.view = 'list'"
+        >
+          List
+        </button>
+      </div>
+    </div>
 
     <article v-for="fr in visible" :key="fr.key" class="franchise">
       <header>
@@ -58,7 +75,10 @@ const total = computed(() =>
           Hide franchise
         </button>
       </header>
-      <ul class="entries">
+      <ul v-if="settings.view === 'list'" class="entry-list">
+        <EntryRow v-for="s in fr.suggestions" :key="s.media.id" :s="s" />
+      </ul>
+      <ul v-else class="entries">
         <EntryCard v-for="s in fr.suggestions" :key="s.media.id" :s="s" />
       </ul>
     </article>

@@ -11,9 +11,13 @@ export interface Settings {
   follow: RelationType[];
   crawlDepth: number;
   cacheTtlHours: number;
+  // how results are laid out: cover cards or a compact list
+  view: ResultView;
   // view filters: applied instantly
   filters: ViewFilters;
 }
+
+export type ResultView = "cards" | "list";
 
 const KEY = "sequel-locator:settings:v1";
 
@@ -24,6 +28,7 @@ const defaults = (): Settings => ({
   follow: RELATIONS.filter((r) => r !== "CHARACTER"),
   crawlDepth: 4,
   cacheTtlHours: 24 * 7,
+  view: "cards",
   filters: {
     formats: [...FORMATS],
     relations: [...RELATIONS],
