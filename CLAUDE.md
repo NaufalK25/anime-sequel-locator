@@ -7,10 +7,14 @@ results.
 
 ## Commands
 
-- `npm run dev`: dev server on http://localhost:5173
-- `npm run build`: type-check (`vue-tsc`) then build. Run this to verify changes.
-- `npm run typecheck`: type-check only
-- MAL proxy: `cd worker && npx wrangler deploy` (needs the `MAL_CLIENT_ID` secret)
+Bun is the package manager (`bun.lock`); don't use npm or commit a
+`package-lock.json`. Scripts still run Vite under Node unless `--bun` is passed.
+
+- `bun install`: install dependencies
+- `bun run dev`: dev server on http://localhost:5173
+- `bun run build`: type-check (`vue-tsc`) then build. Run this to verify changes.
+- `bun run typecheck`: type-check only
+- MAL proxy: `cd worker && bunx wrangler deploy` (needs the `MAL_CLIENT_ID` secret)
 
 There are no tests yet. If you add them, use Vitest and start with the pure
 functions in `src/core/` (`filters.ts`, `franchises.ts`).
