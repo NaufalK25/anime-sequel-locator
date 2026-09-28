@@ -5,6 +5,16 @@ import { malAvailable } from "../providers/mal";
 
 const { settings } = useSettings();
 const { state, run, cancel } = useLocator();
+
+// dd/mm/yyyy hh:mm:ss, in local time
+function formatFetchedAt(ms: number) {
+  const d = new Date(ms);
+  const p = (n: number) => String(n).padStart(2, "0");
+  return (
+    `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ` +
+    `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`
+  );
+}
 </script>
 
 <template>
@@ -63,6 +73,9 @@ const { state, run, cancel } = useLocator();
       role="status"
     >
       {{ state.phase === "error" ? state.error : state.message }}
+      <template v-if="state.phase === 'done' && state.fetchedAt">
+        · Last fetch: {{ formatFetchedAt(state.fetchedAt) }}
+      </template>
     </p>
   </form>
 </template>

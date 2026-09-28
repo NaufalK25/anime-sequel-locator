@@ -1,4 +1,4 @@
-import { createStore, getMany, setMany, clear } from "idb-keyval";
+import { createStore, get, getMany, set, setMany, clear } from "idb-keyval";
 
 // Relation graphs barely change, so caching them in IndexedDB makes every run
 // after the first one near-instant and keeps us far from API rate limits.
@@ -29,3 +29,12 @@ export async function cacheSetMany<T>(pairs: [string, T][]): Promise<void> {
 }
 
 export const clearCache = () => clear(store);
+
+// The last finished run, so a page refresh can show it again without a new
+// crawl. Kept apart from the relation cache so clearing that doesn't drop it.
+// IndexedDB's structured clone keeps the Maps and Sets intact.
+const runStore = createStore("sequel-locator-run", "run");
+const RUN_KEY = "last-run:v1";
+
+export const saveLastRun = <T>(run: T) => set(RUN_KEY, run, runStore);
+export const loadLastRun = <T>() => get<T>(RUN_KEY, runStore);
