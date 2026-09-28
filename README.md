@@ -8,8 +8,8 @@ Stack: Vue 3 + Vite + TypeScript, `idb-keyval` for caching. No router, no Pinia,
 
 ## Run
 
-    npm install
-    npm run dev
+    bun install
+    bun run dev
 
 AniList works out of the box. For MyAnimeList, deploy the proxy (below) and set
 `VITE_MAL_PROXY_URL` in `.env`.
@@ -35,8 +35,8 @@ _filters_ only change what's shown.
 MAL's API sends no CORS headers, so browsers can't call it directly.
 
     cd worker
-    npx wrangler secret put MAL_CLIENT_ID   # from https://myanimelist.net/apiconfig
-    npx wrangler deploy
+    bunx wrangler secret put MAL_CLIENT_ID   # from https://myanimelist.net/apiconfig
+    bunx wrangler deploy
 
 Add your site's origin to `ALLOWED_ORIGINS` in `wrangler.toml`.
 
