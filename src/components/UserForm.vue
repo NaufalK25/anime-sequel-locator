@@ -2,6 +2,7 @@
 import { useSettings } from "../composables/useSettings";
 import { useLocator } from "../composables/useLocator";
 import { malAvailable } from "../providers/mal";
+import { vTooltip } from "../directives/tooltip";
 
 const { settings } = useSettings();
 const { state, run, cancel } = useLocator();
@@ -33,7 +34,7 @@ function formatFetchedAt(ms: number) {
         />
         AniList</label
       >
-      <label :title="malAvailable ? '' : 'Set VITE_MAL_PROXY_URL to enable'">
+      <label v-tooltip="malAvailable ? '' : 'Set VITE_MAL_PROXY_URL to enable'">
         <input
           v-model="settings.source"
           class="accent-accent"

@@ -4,6 +4,7 @@ import EntryCard from "./EntryCard.vue";
 import EntryRow from "./EntryRow.vue";
 import { useLocator } from "../composables/useLocator";
 import { useSettings } from "../composables/useSettings";
+import { vTooltip } from "../directives/tooltip";
 
 const { state, franchises, visible } = useLocator();
 const { settings, excludeFranchise } = useSettings();
@@ -81,13 +82,13 @@ const toggleClass =
             v-for="w in fr.watched"
             :key="w.id"
             class="size-2.75 rounded-full border-2 border-seen bg-seen"
-            :title="`Watched: ${w.title}`"
+            v-tooltip="`Watched: ${w.title}`"
           />
           <span
             v-for="s in fr.suggestions"
             :key="s.media.id"
             class="size-2.75 rounded-full border-2 border-accent"
-            :title="`Not watched: ${s.media.title}`"
+            v-tooltip="`Not watched: ${s.media.title}`"
           />
         </div>
         <span class="text-[13px] text-muted">

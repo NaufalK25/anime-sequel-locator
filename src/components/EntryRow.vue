@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { label } from "../core/labels";
 import { useSettings } from "../composables/useSettings";
+import { vTooltip } from "../directives/tooltip";
 import type { Suggestion } from "../core/franchises";
 
 const props = defineProps<{ s: Suggestion }>();
@@ -19,10 +20,8 @@ const m = props.s.media;
       target="_blank"
       rel="noopener"
       class="truncate text-[14px] leading-[1.3] font-bold hover:underline max-sm:col-span-full max-sm:whitespace-normal"
-      :title="
-        m.titleEnglish && m.titleEnglish !== m.title
-          ? m.titleEnglish
-          : undefined
+      v-tooltip="
+        m.titleEnglish && m.titleEnglish !== m.title ? m.titleEnglish : null
       "
       >{{ m.title }}</a
     >
