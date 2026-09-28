@@ -17,7 +17,8 @@ functions in `src/core/` (`filters.ts`, `franchises.ts`).
 
 ## Stack and constraints
 
-Vue 3 (`<script setup>`, Composition API) + Vite + TypeScript (strict).
+Vue 3 (`<script setup>`, Composition API) + Vite + TypeScript (strict),
+styled with Tailwind CSS v4 (dev dependency, via `@tailwindcss/vite`).
 The only runtime dependency besides Vue is `idb-keyval`.
 
 Keep it lightweight. Ask before adding a dependency, and do not add
@@ -85,11 +86,19 @@ When adding a filter: add the field to `ViewFilters`, a default in
 - Graph-sized data (thousands of objects) goes in `shallowRef`, not `reactive`.
 - Enum values are AniList's (`SIDE_STORY`, `NOT_YET_RELEASED`). Convert to
   display text only with `label()` from `core/labels.ts`; add overrides there.
-- Plain CSS in `src/style.css` using the custom properties on `:root`. No CSS
-  framework. All colors live in the two `:root` blocks at the top; don't write a
-  color value anywhere else. `--accent` marks unwatched things, `--seen` marks entries
-  already on the user's list; keep those meanings. Dark mode comes from
-  `prefers-color-scheme`, so every new color needs both values.
+- Style with Tailwind utility classes in component templates. `src/style.css`
+  holds only the theme, base styles, and `@utility` definitions for patterns
+  used in several components (`field`, `field-label`, `btn-link`). No
+  `<style>` blocks and no other CSS framework or UI kit.
+- All colors live in the two `:root` blocks at the top of `style.css`; don't
+  write a color value anywhere else (no arbitrary `bg-[#...]`). `@theme inline`
+  exposes them as `paper`, `surface`, `ink`, `muted`, `line`, `accent`,
+  `accent-contrast`, `seen`, `error` (e.g. `bg-surface`, `text-muted`,
+  `bg-accent/16`), and Tailwind's default palette is disabled. A new color
+  needs a light value, a dark value, and a `--color-*` line in `@theme`.
+- `accent` marks unwatched things, `seen` marks entries already on the user's
+  list; keep those meanings. Dark mode comes from `prefers-color-scheme` through
+  the tokens, so don't use `dark:` variants.
 - UI copy: sentence case, plain words, errors say what happened and what to do.
 
 ## Known gaps
