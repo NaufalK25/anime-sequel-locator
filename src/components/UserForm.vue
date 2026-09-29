@@ -47,7 +47,7 @@ function formatFetchedAt(ms: number) {
     </div>
     <input
       v-model="settings.username"
-      class="field min-w-55 flex-[0_1_280px]"
+      class="field min-w-55 flex-[0_1_280px] max-sm:min-w-0 max-sm:flex-[1_1_100%]"
       placeholder="Your username"
       autocomplete="username"
       spellcheck="false"
@@ -55,7 +55,7 @@ function formatFetchedAt(ms: number) {
     />
     <button
       v-if="state.phase !== 'running'"
-      class="rounded-lg border border-accent bg-accent px-4 py-2.25 font-bold text-accent-contrast"
+      class="rounded-lg border border-accent bg-accent px-4 py-2.25 font-bold text-accent-contrast max-sm:flex-1"
       type="submit"
     >
       Find related anime
@@ -63,7 +63,7 @@ function formatFetchedAt(ms: number) {
     <button
       v-else
       type="button"
-      class="rounded-lg border border-line bg-surface px-4 py-2.25"
+      class="rounded-lg border border-line bg-surface px-4 py-2.25 max-sm:flex-1"
       @click="cancel"
     >
       Stop

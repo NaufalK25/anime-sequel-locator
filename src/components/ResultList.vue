@@ -50,7 +50,7 @@ const toggleClass =
       class="max-w-[52ch] py-10 text-[17px] text-muted"
     >
       <p v-if="franchises.length">
-        Your filters hide everything. Widen them on the left.
+        Your filters hide everything. Loosen them to see results.
       </p>
       <p v-else>
         You're caught up. Nothing related to your watched list is missing.
@@ -132,7 +132,7 @@ const toggleClass =
       </ul>
       <ul
         v-else
-        class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-3"
+        class="grid grid-cols-[repeat(auto-fill,minmax(min(300px,100%),1fr))] gap-3"
       >
         <EntryCard v-for="s in fr.suggestions" :key="s.media.id" :s="s" />
       </ul>

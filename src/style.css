@@ -83,6 +83,10 @@
   button:disabled {
     opacity: 0.45;
   }
+  /* the page stays put behind an open sheet (the filters on narrow screens) */
+  :root:has(dialog[open]) {
+    overflow: hidden;
+  }
   @media (prefers-reduced-motion: reduce) {
     * {
       transition: none !important;
