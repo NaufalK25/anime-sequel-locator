@@ -67,7 +67,9 @@ onBeforeUnmount(() => {
       class="grid grid-cols-1 gap-8 min-[820px]:grid-cols-[250px_1fr] min-[820px]:gap-6 min-[1024px]:grid-cols-[290px_1fr] min-[1024px]:gap-8"
     >
       <aside v-if="!narrow"><FilterPanel /></aside>
-      <main><ResultList /></main>
+      <!-- min-w-0: a grid column never shrinks below its content by default,
+           so a wide graph would stretch the page instead of scrolling -->
+      <main class="min-w-0"><ResultList /></main>
     </div>
 
     <div class="fixed right-4 bottom-4 z-20 flex flex-col items-end gap-2.5">

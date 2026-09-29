@@ -46,6 +46,9 @@ function show(target: HTMLElement) {
   const text = texts.get(target);
   if (!text || !target.isConnected) return hide();
   const t = tipEl();
+  // an open modal dialog sits in the top layer, above anything in <body>
+  const host = target.closest("dialog[open]") ?? document.body;
+  if (t.parentElement !== host) host.append(t);
   anchor?.removeAttribute("aria-describedby");
   anchor = target;
   t.textContent = text;

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, nextTick, useTemplateRef } from "vue";
+import { computed, nextTick, reactive, useTemplateRef } from "vue";
 import EntryCard from "./EntryCard.vue";
 import EntryRow from "./EntryRow.vue";
+import FranchiseGraph from "./FranchiseGraph.vue";
 import { useLocator } from "../composables/useLocator";
 import { useSettings, type ResultView } from "../composables/useSettings";
 import { vTooltip } from "../directives/tooltip";
@@ -11,6 +12,11 @@ const { settings, excludeFranchise } = useSettings();
 const total = computed(() =>
   visible.value.reduce((n, f) => n + f.suggestions.length, 0),
 );
+
+// franchises currently showing their relation graph instead of entries
+const graphs = reactive(new Set<number>());
+const toggleGraph = (key: number) =>
+  graphs.has(key) ? graphs.delete(key) : graphs.add(key);
 
 const bar = useTemplateRef("bar");
 const articles = useTemplateRef("articles");
@@ -131,13 +137,22 @@ const toggleClass =
         <button
           type="button"
           class="btn-link"
+          :aria-pressed="graphs.has(fr.key)"
+          @click="toggleGraph(fr.key)"
+        >
+          {{ graphs.has(fr.key) ? "Show entries" : "Show graph" }}
+        </button>
+        <button
+          type="button"
+          class="btn-link"
           @click="excludeFranchise(fr.key)"
         >
           Hide franchise
         </button>
       </header>
+      <FranchiseGraph v-if="graphs.has(fr.key)" :fr="fr" />
       <ul
-        v-if="settings.view === 'list'"
+        v-else-if="settings.view === 'list'"
         class="overflow-hidden rounded-[10px] bg-surface"
       >
         <EntryRow v-for="s in fr.suggestions" :key="s.media.id" :s="s" />

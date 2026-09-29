@@ -1,5 +1,10 @@
 import type { Graph } from "./crawler";
-import type { ListStatus, MediaNode, RelationType } from "../types";
+import type {
+  ListStatus,
+  MediaNode,
+  RelationEdge,
+  RelationType,
+} from "../types";
 
 export interface Suggestion {
   media: MediaNode;
@@ -16,6 +21,13 @@ export interface Franchise {
   memberIds: number[];
   /** undirected relation links; shared by every franchise from the same graph */
   links: Map<number, number[]>;
+  /** every crawled entry; shared by every franchise from the same graph */
+  nodes: Map<number, MediaNode>;
+  /**
+   * this franchise's relations, one per pair of entries. PREQUEL is flipped
+   * into SEQUEL, so every SEQUEL edge points from earlier to later.
+   */
+  edges: RelationEdge[];
   watched: MediaNode[];
   suggestions: Suggestion[];
 }
@@ -59,6 +71,25 @@ export function buildFranchises(
     else groups.set(root, [id]);
   }
 
+  // Both ends of a relation usually list it (A SEQUEL B, B PREQUEL A), so keep
+  // one edge per pair, preferring SEQUEL, and group the edges by franchise.
+  const pairs = new Map<string, RelationEdge>();
+  for (const e of graph.edges) {
+    if (e.from === e.to) continue;
+    const n: RelationEdge =
+      e.type === "PREQUEL" ? { from: e.to, to: e.from, type: "SEQUEL" } : e;
+    const k = `${Math.min(n.from, n.to)}-${Math.max(n.from, n.to)}`;
+    const had = pairs.get(k);
+    if (!had || (had.type !== "SEQUEL" && n.type === "SEQUEL")) pairs.set(k, n);
+  }
+  const edgesOf = new Map<number, RelationEdge[]>();
+  for (const e of pairs.values()) {
+    const root = find(e.from);
+    const l = edgesOf.get(root);
+    if (l) l.push(e);
+    else edgesOf.set(root, [e]);
+  }
+
   const byYear = (a: MediaNode, b: MediaNode) =>
     (a.seasonYear ?? 9999) - (b.seasonYear ?? 9999);
   const out: Franchise[] = [];
@@ -90,6 +121,8 @@ export function buildFranchises(
       title: watched[0].title,
       memberIds: ids,
       links,
+      nodes: graph.nodes,
+      edges: edgesOf.get(root) ?? [],
       watched,
       suggestions,
     });
