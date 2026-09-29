@@ -5,6 +5,7 @@ import { layoutFranchise, type Cell } from "../core/graphLayout";
 import type { Franchise, Suggestion } from "../core/franchises";
 import type { RelationEdge } from "../types";
 import { vTooltip } from "../directives/tooltip";
+import { titleOf } from "../composables/useSettings";
 
 const props = defineProps<{ fr: Franchise }>();
 
@@ -74,10 +75,10 @@ const nodes = computed(() => {
         : "hidden";
     const tip =
       kind === "watched"
-        ? `Watched: ${m.title}`
+        ? `Watched: ${titleOf(m)}`
         : s
-          ? `Not watched: ${m.title}. ${label(s.relation)} of ${s.fromTitle}`
-          : `Hidden by your filters: ${m.title}`;
+          ? `Not watched: ${titleOf(m)}. ${label(s.relation)} of ${s.from ? titleOf(s.from) : "?"}`
+          : `Hidden by your filters: ${titleOf(m)}`;
     return { m, kind, tip, cell: cellOf(id) };
   });
 });
@@ -154,7 +155,10 @@ const edges = computed(() =>
       d = `M${x1} ${y1}C${x1 + dx} ${y1} ${x2 - dx} ${y2} ${x2} ${y2}`;
     }
     // AniList reads "to is the <type> of from", e.g. "Side story of Season 1"
-    const title = (id: number) => props.fr.nodes.get(id)?.title ?? "?";
+    const title = (id: number) => {
+      const m = props.fr.nodes.get(id);
+      return m ? titleOf(m) : "?";
+    };
     const tip = `${title(e.to)}: ${label(e.type)} of ${title(e.from)}`;
     const sequel = e.type === "SEQUEL";
     return {
@@ -205,13 +209,13 @@ const kindClass: Record<Kind, string> = {
       :id="dialogId"
       ref="dialog"
       class="m-auto h-[calc(100dvh-32px)] max-h-none w-[calc(100vw-32px)] max-w-none flex-col overflow-hidden rounded-xl bg-paper p-4 text-ink backdrop:bg-ink/40 open:flex"
-      :aria-label="`Relation graph: ${fr.title}`"
+      :aria-label="`Relation graph: ${titleOf(fr.main)}`"
       @click="onDialogClick"
       @close="full = false"
     >
       <div class="mb-3 flex items-center justify-between gap-4">
         <h2 class="font-display text-[1.35rem] leading-[1.2] font-extrabold">
-          {{ fr.title }}
+          {{ titleOf(fr.main) }}
         </h2>
         <button
           type="button"
@@ -339,7 +343,7 @@ const kindClass: Record<Kind, string> = {
               @blur="active = null"
             >
               <span class="line-clamp-2 text-[13px] leading-tight font-bold">{{
-                n.m.title
+                titleOf(n.m)
               }}</span>
               <span class="text-[11px] text-muted">
                 {{ n.m.format ? label(n.m.format) : "?" }},

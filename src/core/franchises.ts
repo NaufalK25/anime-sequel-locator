@@ -11,15 +11,19 @@ export interface Suggestion {
   media: MediaNode;
   depth: number;
   relation: RelationType;
-  fromTitle: string;
+  /** the entry it was found from; kept whole so either title can be shown */
+  from: MediaNode | null;
   listStatus: ListStatus | null;
 }
 
 export interface Franchise {
   /** smallest member id, stable enough for keys */
   key: number;
-  /** the earliest watched TV series, else the most series-like watched entry */
-  title: string;
+  /**
+   * the entry the franchise is named after: the earliest watched TV series,
+   * else the most series-like watched entry
+   */
+  main: MediaNode;
   memberIds: number[];
   /** undirected relation links; shared by every franchise from the same graph */
   links: Map<number, number[]>;
@@ -238,7 +242,7 @@ export function buildFranchises(
           media: graph.nodes.get(id)!,
           depth: graph.depth.get(id) ?? 0,
           relation: via.type,
-          fromTitle: graph.nodes.get(via.from)?.title ?? "?",
+          from: graph.nodes.get(via.from) ?? null,
           listStatus: listStatus.get(id) ?? null,
         };
       })
@@ -248,7 +252,7 @@ export function buildFranchises(
     watched.sort(byYear);
     out.push({
       key: root,
-      title: [...watched].sort(byMain)[0].title,
+      main: [...watched].sort(byMain)[0],
       memberIds: ids,
       links,
       nodes: graph.nodes,
@@ -258,5 +262,5 @@ export function buildFranchises(
     });
   }
 
-  return out.sort((a, b) => a.title.localeCompare(b.title));
+  return out;
 }

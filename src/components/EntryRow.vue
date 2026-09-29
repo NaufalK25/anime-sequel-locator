@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { label } from "../core/labels";
-import { useSettings } from "../composables/useSettings";
+import { otherTitleOf, titleOf, useSettings } from "../composables/useSettings";
 import { vTooltip } from "../directives/tooltip";
 import type { Suggestion } from "../core/franchises";
 
@@ -20,10 +20,8 @@ const m = props.s.media;
       target="_blank"
       rel="noopener"
       class="truncate text-[14px] leading-[1.3] font-bold hover:underline max-sm:col-span-full max-sm:whitespace-normal"
-      v-tooltip="
-        m.titleEnglish && m.titleEnglish !== m.title ? m.titleEnglish : null
-      "
-      >{{ m.title }}</a
+      v-tooltip="otherTitleOf(m)"
+      >{{ titleOf(m) }}</a
     >
     <span
       class="text-muted max-sm:col-start-1 [&>span+span]:before:content-[',_']"
@@ -36,7 +34,7 @@ const m = props.s.media;
       }}</span>
     </span>
     <span class="truncate text-muted max-sm:col-start-1"
-      >{{ label(s.relation) }} of {{ s.fromTitle }}</span
+      >{{ label(s.relation) }} of {{ s.from ? titleOf(s.from) : "?" }}</span
     >
     <span
       v-if="s.listStatus"

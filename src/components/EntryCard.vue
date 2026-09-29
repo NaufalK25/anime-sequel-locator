@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { label } from "../core/labels";
-import { useSettings } from "../composables/useSettings";
+import { otherTitleOf, titleOf, useSettings } from "../composables/useSettings";
 import type { Suggestion } from "../core/franchises";
 
 const props = defineProps<{ s: Suggestion }>();
@@ -27,13 +27,10 @@ const m = props.s.media;
         target="_blank"
         rel="noopener"
         class="leading-[1.3] font-bold hover:underline"
-        >{{ m.title }}</a
+        >{{ titleOf(m) }}</a
       >
-      <p
-        v-if="m.titleEnglish && m.titleEnglish !== m.title"
-        class="text-[13px] text-muted"
-      >
-        {{ m.titleEnglish }}
+      <p v-if="otherTitleOf(m)" class="text-[13px] text-muted">
+        {{ otherTitleOf(m) }}
       </p>
       <p class="text-[13px] text-muted [&>span+span]:before:content-[',_']">
         <span v-if="m.format">{{ label(m.format) }}</span>
@@ -44,7 +41,7 @@ const m = props.s.media;
         }}</span>
       </p>
       <p class="text-[13px] text-muted">
-        {{ label(s.relation) }} of {{ s.fromTitle }}
+        {{ label(s.relation) }} of {{ s.from ? titleOf(s.from) : "?" }}
       </p>
       <p v-if="s.listStatus" class="text-[13px] font-bold text-seen">
         On your list: {{ label(s.listStatus) }}

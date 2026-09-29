@@ -1,7 +1,7 @@
 import { reactive, watch } from "vue";
 import { AIRING, FORMATS, RELATIONS } from "../core/labels";
 import type { FranchiseSort, ViewFilters } from "../core/filters";
-import type { ListStatus, RelationType, Source } from "../types";
+import type { ListStatus, MediaNode, RelationType, Source } from "../types";
 
 export interface Settings {
   source: Source;
@@ -15,11 +15,15 @@ export interface Settings {
   view: ResultView;
   // franchise order; like `view`, not reset with the filters
   sort: FranchiseSort;
+  // which title to show; read it through titleOf() below
+  titleLanguage: TitleLanguage;
   // view filters: applied instantly
   filters: ViewFilters;
 }
 
 export type ResultView = "cards" | "list";
+/** romaji is AniList's main title (Japanese in Latin letters) */
+export type TitleLanguage = "romaji" | "english";
 
 const KEY = "sequel-locator:settings:v1";
 
@@ -32,6 +36,7 @@ const defaults = (): Settings => ({
   cacheTtlHours: 24 * 7,
   view: "cards",
   sort: "title-asc",
+  titleLanguage: "romaji",
   filters: {
     formats: [...FORMATS],
     relations: [...RELATIONS],
@@ -72,6 +77,23 @@ watch(
   },
   { deep: true },
 );
+
+/**
+ * The title to show for an entry, in the chosen language. English falls back
+ * to the main title when AniList has none. Reactive: computeds and templates
+ * that call it update when the setting changes.
+ */
+export function titleOf(m: MediaNode): string {
+  return settings.titleLanguage === "english"
+    ? (m.titleEnglish ?? m.title)
+    : m.title;
+}
+
+/** The title not being shown, if the entry has a different one. */
+export function otherTitleOf(m: MediaNode): string | null {
+  const other = settings.titleLanguage === "english" ? m.title : m.titleEnglish;
+  return other && other !== titleOf(m) ? other : null;
+}
 
 export function useSettings() {
   const toggleIn = (list: number[], id: number) => {

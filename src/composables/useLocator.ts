@@ -5,7 +5,7 @@ import { applyFilters, sortFranchises } from "../core/filters";
 import { fetchAniListUser } from "../providers/anilist";
 import { fetchMalUser } from "../providers/mal";
 import { loadLastRun, saveLastRun } from "../core/cache";
-import { useSettings } from "./useSettings";
+import { titleOf, useSettings } from "./useSettings";
 import type {
   ListStatus,
   MediaNode,
@@ -163,7 +163,9 @@ export function useLocator() {
     applyFilters(franchises.value, settings.filters),
   );
   // separate step so changing the order doesn't re-run the filters
-  const visible = computed(() => sortFranchises(filtered.value, settings.sort));
+  const visible = computed(() =>
+    sortFranchises(filtered.value, settings.sort, (fr) => titleOf(fr.main)),
+  );
 
   return { state, run, cancel, franchises, visible };
 }

@@ -4,7 +4,11 @@ import EntryCard from "./EntryCard.vue";
 import EntryRow from "./EntryRow.vue";
 import FranchiseGraph from "./FranchiseGraph.vue";
 import { useLocator } from "../composables/useLocator";
-import { useSettings, type ResultView } from "../composables/useSettings";
+import {
+  titleOf,
+  useSettings,
+  type ResultView,
+} from "../composables/useSettings";
 import { vTooltip } from "../directives/tooltip";
 
 const { state, franchises, visible } = useLocator();
@@ -110,7 +114,7 @@ const toggleClass =
           <!-- the label shown when closed; hidden from the open list -->
           <option value="" selected hidden>Jump to franchise…</option>
           <option v-for="fr in visible" :key="fr.key" :value="fr.key">
-            {{ fr.title }} ({{ fr.suggestions.length }})
+            {{ titleOf(fr.main) }} ({{ fr.suggestions.length }})
           </option>
         </select>
       </div>
@@ -148,6 +152,30 @@ const toggleClass =
             List
           </button>
         </div>
+        <div
+          class="inline-flex rounded-full bg-ink/6 p-0.75"
+          role="group"
+          aria-label="Titles"
+        >
+          <button
+            type="button"
+            :class="toggleClass"
+            :aria-pressed="settings.titleLanguage === 'romaji'"
+            v-tooltip="'Japanese titles in Latin letters (romaji)'"
+            @click="settings.titleLanguage = 'romaji'"
+          >
+            Japanese
+          </button>
+          <button
+            type="button"
+            :class="toggleClass"
+            :aria-pressed="settings.titleLanguage === 'english'"
+            v-tooltip="'English titles, or the Japanese one if there is none'"
+            @click="settings.titleLanguage = 'english'"
+          >
+            English
+          </button>
+        </div>
       </div>
     </div>
 
@@ -175,7 +203,7 @@ const toggleClass =
           tabindex="-1"
           class="basis-full font-display text-[1.35rem] leading-[1.2] font-extrabold focus:outline-none"
         >
-          {{ fr.title }}
+          {{ titleOf(fr.main) }}
         </h2>
         <!-- The one loud element: a franchise's watch progress as a string of beads.
              One dot per entry: filled = watched, open = still to find. -->
@@ -184,13 +212,13 @@ const toggleClass =
             v-for="w in fr.watched"
             :key="w.id"
             class="size-2.75 rounded-full border-2 border-seen bg-seen"
-            v-tooltip="`Watched: ${w.title}`"
+            v-tooltip="`Watched: ${titleOf(w)}`"
           />
           <span
             v-for="s in fr.suggestions"
             :key="s.media.id"
             class="size-2.75 rounded-full border-2 border-accent"
-            v-tooltip="`Not watched: ${s.media.title}`"
+            v-tooltip="`Not watched: ${titleOf(s.media)}`"
           />
         </div>
         <span class="text-[13px] text-muted">

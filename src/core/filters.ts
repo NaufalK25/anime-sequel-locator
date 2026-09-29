@@ -36,13 +36,17 @@ export type FranchiseSort =
   | "count-asc"
   | "count-desc";
 
-/** Order franchises by title or by how many suggestions each shows; ties go by title. */
+/**
+ * Order franchises by title or by how many suggestions each shows; ties go by
+ * title. `name` gives the title as displayed, so A to Z matches what's shown.
+ */
 export function sortFranchises(
   franchises: Franchise[],
   sort: FranchiseSort,
+  name: (fr: Franchise) => string,
 ): Franchise[] {
   const byTitle = (a: Franchise, b: Franchise) =>
-    a.title.localeCompare(b.title);
+    name(a).localeCompare(name(b));
   const cmp: Record<FranchiseSort, (a: Franchise, b: Franchise) => number> = {
     "title-asc": byTitle,
     "title-desc": (a, b) => byTitle(b, a),
