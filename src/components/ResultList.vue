@@ -36,6 +36,34 @@ async function setView(view: ResultView) {
   window.scrollBy(0, anchor.getBoundingClientRect().top - before);
 }
 
+// Scroll so the franchise starts just below the sticky bar. The bar's own
+// position can't be used: before it sticks it sits lower than it will after.
+function jumpTo(key: number) {
+  const article = document.getElementById(`franchise-${key}`);
+  const b = bar.value;
+  if (!article || !b) return;
+  const stuckBottom = parseFloat(getComputedStyle(b).top) + b.offsetHeight;
+  const y = article.getBoundingClientRect().top + window.scrollY;
+  // Move keyboard focus too, so Tab continues from that franchise. It goes
+  // first: moving focus cancels a smooth scroll that's already running, and
+  // the scroll waits a frame so the closing dropdown can't cancel it either.
+  article.querySelector("h2")?.focus({ preventScroll: true });
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  requestAnimationFrame(() =>
+    window.scrollTo({
+      top: y - stuckBottom - 12,
+      behavior: reduce ? "auto" : "smooth",
+    }),
+  );
+}
+
+function onJump(e: Event) {
+  const select = e.target as HTMLSelectElement;
+  if (select.value) jumpTo(Number(select.value));
+  // back to the placeholder, so picking the same franchise again still jumps
+  select.value = "";
+}
+
 const toggleClass =
   "rounded-full px-3.5 py-1 text-[13px] text-muted transition-colors duration-150 hover:text-ink aria-pressed:bg-surface aria-pressed:font-bold aria-pressed:text-ink";
 </script>
@@ -65,18 +93,32 @@ const toggleClass =
       ref="bar"
       class="sticky top-(--header-h) z-5 mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 bg-paper py-2 text-muted max-[820px]:top-0"
     >
-      <input
-        v-model="settings.filters.search"
-        type="search"
-        class="field min-w-0 flex-1 basis-full py-1.5 text-ink"
-        placeholder="Search anime in your results"
-        aria-label="Search anime in your results"
-      />
+      <div class="flex basis-full flex-wrap gap-2">
+        <input
+          v-model="settings.filters.search"
+          type="search"
+          class="field min-w-0 grow basis-60 py-1.5 text-ink"
+          placeholder="Search anime in your results"
+          aria-label="Search anime in your results"
+        />
+        <!-- table of contents: every shown franchise, in the current order -->
+        <select
+          class="field picker max-w-full min-w-0 basis-60 py-1.5 text-ink"
+          aria-label="Jump to franchise"
+          @change="onJump"
+        >
+          <!-- the label shown when closed; hidden from the open list -->
+          <option value="" selected hidden>Jump to franchise…</option>
+          <option v-for="fr in visible" :key="fr.key" :value="fr.key">
+            {{ fr.title }} ({{ fr.suggestions.length }})
+          </option>
+        </select>
+      </div>
       <p>{{ total }} entries across {{ visible.length }} franchises</p>
       <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
         <select
           v-model="settings.sort"
-          class="field py-1 text-[13px] text-ink"
+          class="field picker py-1 text-[13px] text-ink"
           aria-label="Sort franchises"
         >
           <option value="title-asc">Title, A to Z</option>
@@ -121,10 +163,17 @@ const toggleClass =
       <p v-else>Your filters hide everything. Loosen them to see results.</p>
     </div>
 
-    <article v-for="fr in visible" :key="fr.key" ref="articles" class="mb-10">
+    <article
+      v-for="fr in visible"
+      :id="`franchise-${fr.key}`"
+      :key="fr.key"
+      ref="articles"
+      class="mb-10"
+    >
       <header class="mb-3.5 flex flex-wrap items-center gap-x-4 gap-y-2">
         <h2
-          class="basis-full font-display text-[1.35rem] leading-[1.2] font-extrabold"
+          tabindex="-1"
+          class="basis-full font-display text-[1.35rem] leading-[1.2] font-extrabold focus:outline-none"
         >
           {{ fr.title }}
         </h2>
