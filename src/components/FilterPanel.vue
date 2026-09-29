@@ -33,6 +33,24 @@ const keywords = computed({
       :options="LIST_STATUSES"
     />
 
+    <label class="flex items-start gap-2">
+      <input
+        v-model="f.joinCrossovers"
+        type="checkbox"
+        class="mt-0.75 size-4 shrink-0 accent-accent"
+      />
+      <span>
+        <span class="block text-[13px] font-bold"
+          >Join series linked by a crossover</span
+        >
+        <span class="block text-[13px] text-muted"
+          >When off, two series you've watched that share only a collab (a
+          crossover, PV or spin-off) are shown as separate franchises, and the
+          collab appears in both.</span
+        >
+      </span>
+    </label>
+
     <label>
       <span class="field-label"
         >Show up to {{ f.maxDepth }}

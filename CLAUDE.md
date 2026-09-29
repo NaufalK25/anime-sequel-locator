@@ -43,7 +43,9 @@ Data flows in one direction:
      `MediaNode.id` is an AniList id.
 2. `src/core/crawler.ts`: breadth-first walk from watched entries, following
    only the chosen relation types. Unwatched entries keep being expanded
-   (S1 watched → S2 → S3 finds both). Relations are cached in IndexedDB
+   (S1 watched → S2 → S3 finds both), except ones reached only through
+   OTHER or CHARACTER: those are kept but not expanded, so a crossover
+   special doesn't pull in the other series. Relations are cached in IndexedDB
    under `rel:{id}` via `core/cache.ts`.
 3. `src/core/franchises.ts`: union-find over relation edges → franchises
    (connected components), each split into watched entries and suggestions.

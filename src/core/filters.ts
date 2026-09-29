@@ -20,6 +20,11 @@ export interface ViewFilters {
    */
   titleExclude: string[];
   search: string;
+  /**
+   * keep two watched series joined by a crossover as one franchise. Used by
+   * buildFranchises, not applyFilters, but it's still view-only: no refetch.
+   */
+  joinCrossovers: boolean;
   excludedMedia: number[];
   /** any member id; the whole franchise containing it is hidden */
   excludedFranchises: number[];

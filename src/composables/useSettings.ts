@@ -40,6 +40,7 @@ const defaults = (): Settings => ({
     maxDepth: 4,
     titleExclude: [],
     search: "",
+    joinCrossovers: false,
     excludedMedia: [],
     excludedFranchises: [],
   },

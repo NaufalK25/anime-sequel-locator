@@ -151,7 +151,12 @@ export function useLocator() {
     const listStatus = new Map<number, ListStatus>(
       user.value.entries.map((e) => [e.mediaId, e.status]),
     );
-    return buildFranchises(graph.value, watchedIds.value, listStatus);
+    return buildFranchises(
+      graph.value,
+      watchedIds.value,
+      listStatus,
+      settings.filters.joinCrossovers,
+    );
   });
 
   const filtered = computed(() =>
