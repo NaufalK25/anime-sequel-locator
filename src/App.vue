@@ -26,13 +26,24 @@ function onSheetClick(e: MouseEvent) {
   if (e.target === sheet.value) closeFilters();
 }
 
+// "Back to top" appears once the page is scrolled past one screen.
+const scrolledDown = ref(false);
+const syncScrolled = () => (scrolledDown.value = window.scrollY > innerHeight);
+function backToTop() {
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+}
+
 onMounted(() => {
   if (header.value) observer.observe(header.value);
   narrowQuery.addEventListener("change", syncNarrow);
+  window.addEventListener("scroll", syncScrolled, { passive: true });
+  syncScrolled();
 });
 onBeforeUnmount(() => {
   observer.disconnect();
   narrowQuery.removeEventListener("change", syncNarrow);
+  window.removeEventListener("scroll", syncScrolled);
 });
 </script>
 
@@ -59,14 +70,38 @@ onBeforeUnmount(() => {
       <main><ResultList /></main>
     </div>
 
-    <template v-if="narrow">
+    <div class="fixed right-4 bottom-4 z-20 flex flex-col items-end gap-2.5">
       <button
+        v-if="scrolledDown"
         type="button"
-        class="fixed right-4 bottom-4 z-20 rounded-full bg-ink px-5 py-3 font-bold text-paper shadow-lg"
+        class="grid size-11 place-items-center rounded-full border border-line bg-surface text-ink shadow-lg"
+        aria-label="Back to top"
+        @click="backToTop"
+      >
+        <svg
+          class="size-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.25"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12 19V5M5 12l7-7 7 7" />
+        </svg>
+      </button>
+      <button
+        v-if="narrow"
+        type="button"
+        class="rounded-full bg-ink px-5 py-3 font-bold text-paper shadow-lg"
         @click="openFilters"
       >
         Filters
       </button>
+    </div>
+
+    <template v-if="narrow">
       <dialog
         ref="sheet"
         class="my-0 mr-0 ml-auto h-dvh max-h-none w-full max-w-sm overscroll-contain bg-paper text-ink backdrop:bg-ink/40"
