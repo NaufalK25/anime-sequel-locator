@@ -1,7 +1,7 @@
 import { computed, reactive, shallowRef } from "vue";
 import { crawl, type Graph } from "../core/crawler";
 import { buildFranchises } from "../core/franchises";
-import { applyFilters } from "../core/filters";
+import { applyFilters, sortFranchises } from "../core/filters";
 import { fetchAniListUser } from "../providers/anilist";
 import { fetchMalUser } from "../providers/mal";
 import { loadLastRun, saveLastRun } from "../core/cache";
@@ -154,9 +154,11 @@ export function useLocator() {
     return buildFranchises(graph.value, watchedIds.value, listStatus);
   });
 
-  const visible = computed(() =>
+  const filtered = computed(() =>
     applyFilters(franchises.value, settings.filters),
   );
+  // separate step so changing the order doesn't re-run the filters
+  const visible = computed(() => sortFranchises(filtered.value, settings.sort));
 
   return { state, run, cancel, franchises, visible };
 }

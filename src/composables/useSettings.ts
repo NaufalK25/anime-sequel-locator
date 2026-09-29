@@ -1,6 +1,6 @@
 import { reactive, watch } from "vue";
 import { AIRING, FORMATS, RELATIONS } from "../core/labels";
-import type { ViewFilters } from "../core/filters";
+import type { FranchiseSort, ViewFilters } from "../core/filters";
 import type { ListStatus, RelationType, Source } from "../types";
 
 export interface Settings {
@@ -13,6 +13,8 @@ export interface Settings {
   cacheTtlHours: number;
   // how results are laid out: cover cards or a compact list
   view: ResultView;
+  // franchise order; like `view`, not reset with the filters
+  sort: FranchiseSort;
   // view filters: applied instantly
   filters: ViewFilters;
 }
@@ -29,6 +31,7 @@ const defaults = (): Settings => ({
   crawlDepth: 4,
   cacheTtlHours: 24 * 7,
   view: "cards",
+  sort: "title-asc",
   filters: {
     formats: [...FORMATS],
     relations: [...RELATIONS],

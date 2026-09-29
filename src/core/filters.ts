@@ -25,6 +25,30 @@ export interface ViewFilters {
   excludedFranchises: number[];
 }
 
+export type FranchiseSort =
+  | "title-asc"
+  | "title-desc"
+  | "count-asc"
+  | "count-desc";
+
+/** Order franchises by title or by how many suggestions each shows; ties go by title. */
+export function sortFranchises(
+  franchises: Franchise[],
+  sort: FranchiseSort,
+): Franchise[] {
+  const byTitle = (a: Franchise, b: Franchise) =>
+    a.title.localeCompare(b.title);
+  const cmp: Record<FranchiseSort, (a: Franchise, b: Franchise) => number> = {
+    "title-asc": byTitle,
+    "title-desc": (a, b) => byTitle(b, a),
+    "count-asc": (a, b) =>
+      a.suggestions.length - b.suggestions.length || byTitle(a, b),
+    "count-desc": (a, b) =>
+      b.suggestions.length - a.suggestions.length || byTitle(a, b),
+  };
+  return [...franchises].sort(cmp[sort]);
+}
+
 /** Breadth-first hop counts from `starts`, never walking through `blocked`. */
 function hopsFrom(
   starts: number[],

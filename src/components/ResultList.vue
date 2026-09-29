@@ -65,27 +65,39 @@ const toggleClass =
       class="sticky top-(--header-h) z-5 mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 bg-paper py-2 text-muted max-[820px]:top-0"
     >
       <p>{{ total }} entries across {{ visible.length }} franchises</p>
-      <div
-        class="inline-flex rounded-full bg-ink/6 p-0.75"
-        role="group"
-        aria-label="Layout"
-      >
-        <button
-          type="button"
-          :class="toggleClass"
-          :aria-pressed="settings.view === 'cards'"
-          @click="setView('cards')"
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <select
+          v-model="settings.sort"
+          class="field py-1 text-[13px] text-ink"
+          aria-label="Sort franchises"
         >
-          Cards
-        </button>
-        <button
-          type="button"
-          :class="toggleClass"
-          :aria-pressed="settings.view === 'list'"
-          @click="setView('list')"
+          <option value="title-asc">Title, A to Z</option>
+          <option value="title-desc">Title, Z to A</option>
+          <option value="count-asc">Fewest entries first</option>
+          <option value="count-desc">Most entries first</option>
+        </select>
+        <div
+          class="inline-flex rounded-full bg-ink/6 p-0.75"
+          role="group"
+          aria-label="Layout"
         >
-          List
-        </button>
+          <button
+            type="button"
+            :class="toggleClass"
+            :aria-pressed="settings.view === 'cards'"
+            @click="setView('cards')"
+          >
+            Cards
+          </button>
+          <button
+            type="button"
+            :class="toggleClass"
+            :aria-pressed="settings.view === 'list'"
+            @click="setView('list')"
+          >
+            List
+          </button>
+        </div>
       </div>
     </div>
 
