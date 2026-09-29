@@ -52,24 +52,26 @@ const toggleClass =
       </p>
     </div>
     <div
-      v-else-if="state.phase === 'done' && !visible.length"
+      v-else-if="state.phase === 'done' && !franchises.length"
       class="max-w-[52ch] py-10 text-[17px] text-muted"
     >
-      <p v-if="franchises.length">
-        Your filters hide everything. Loosen them to see results.
-      </p>
-      <p v-else>
-        You're caught up. Nothing related to your watched list is missing.
-      </p>
+      <p>You're caught up. Nothing related to your watched list is missing.</p>
     </div>
 
     <!-- pinned below the sticky header (see App.vue) so the layout can be
          switched mid-scroll; the header isn't sticky on narrow screens -->
     <div
-      v-if="visible.length"
+      v-if="franchises.length"
       ref="bar"
       class="sticky top-(--header-h) z-5 mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 bg-paper py-2 text-muted max-[820px]:top-0"
     >
+      <input
+        v-model="settings.filters.search"
+        type="search"
+        class="field min-w-0 flex-1 basis-full py-1.5 text-ink"
+        placeholder="Search anime in your results"
+        aria-label="Search anime in your results"
+      />
       <p>{{ total }} entries across {{ visible.length }} franchises</p>
       <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
         <select
@@ -105,6 +107,18 @@ const toggleClass =
           </button>
         </div>
       </div>
+    </div>
+
+    <!-- below the bar, so the search box stays put while nothing matches -->
+    <div
+      v-if="franchises.length && !visible.length"
+      class="max-w-[52ch] py-10 text-[17px] text-muted"
+    >
+      <p v-if="settings.filters.search.trim()">
+        No anime in your results matches "{{ settings.filters.search.trim() }}".
+        Check the spelling, or clear the search.
+      </p>
+      <p v-else>Your filters hide everything. Loosen them to see results.</p>
     </div>
 
     <article v-for="fr in visible" :key="fr.key" ref="articles" class="mb-10">
