@@ -1,6 +1,7 @@
 import type { Graph } from "./crawler";
 import type {
   ListStatus,
+  MediaFormat,
   MediaNode,
   RelationEdge,
   RelationType,
@@ -17,6 +18,7 @@ export interface Suggestion {
 export interface Franchise {
   /** smallest member id, stable enough for keys */
   key: number;
+  /** the earliest watched TV series, else the most series-like watched entry */
   title: string;
   memberIds: number[];
   /** undirected relation links; shared by every franchise from the same graph */
@@ -31,6 +33,17 @@ export interface Franchise {
   watched: MediaNode[];
   suggestions: Suggestion[];
 }
+
+/** Formats from most to least likely to be a franchise's main series. */
+const MAIN_FORMATS: MediaFormat[] = [
+  "TV",
+  "TV_SHORT",
+  "ONA",
+  "OVA",
+  "MOVIE",
+  "SPECIAL",
+  "MUSIC",
+];
 
 /** Relation types a crossover or collab is filed under; story relations never are. */
 const CROSSOVER_TYPES: ReadonlySet<RelationType> = new Set([
@@ -196,6 +209,12 @@ export function buildFranchises(
 
   const byYear = (a: MediaNode, b: MediaNode) =>
     (a.seasonYear ?? 9999) - (b.seasonYear ?? 9999);
+  // Name a franchise after its main series, not whatever came out first: a
+  // pilot film or event special often predates the TV show it's attached to.
+  const mainness = (m: MediaNode) =>
+    m.format ? MAIN_FORMATS.indexOf(m.format) : MAIN_FORMATS.length;
+  const byMain = (a: MediaNode, b: MediaNode) =>
+    mainness(a) - mainness(b) || byYear(a, b) || a.id - b.id;
   const out: Franchise[] = [];
 
   for (const [root, own] of groups) {
@@ -229,7 +248,7 @@ export function buildFranchises(
     watched.sort(byYear);
     out.push({
       key: root,
-      title: watched[0].title,
+      title: [...watched].sort(byMain)[0].title,
       memberIds: ids,
       links,
       nodes: graph.nodes,
