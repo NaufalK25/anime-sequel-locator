@@ -69,7 +69,10 @@ function onJump(e: Event) {
 }
 
 const toggleClass =
-  "rounded-full px-3.5 py-1 text-[13px] text-muted transition-colors duration-150 hover:text-ink aria-pressed:bg-surface aria-pressed:font-bold aria-pressed:text-ink";
+  "grid size-7.5 place-items-center rounded-full text-muted transition-colors duration-150 hover:text-ink aria-pressed:bg-surface aria-pressed:text-ink";
+const iconClass =
+  "size-4 fill-none stroke-current stroke-[1.6] [stroke-linecap:round]";
+const glyphClass = "text-[15px] leading-none font-bold";
 </script>
 
 <template>
@@ -139,17 +142,28 @@ const toggleClass =
             type="button"
             :class="toggleClass"
             :aria-pressed="settings.view === 'cards'"
+            aria-label="Cards"
+            v-tooltip="'Cards'"
             @click="setView('cards')"
           >
-            Cards
+            <svg viewBox="0 0 16 16" :class="iconClass" aria-hidden="true">
+              <rect x="2" y="2" width="5" height="5" rx="1" />
+              <rect x="9" y="2" width="5" height="5" rx="1" />
+              <rect x="2" y="9" width="5" height="5" rx="1" />
+              <rect x="9" y="9" width="5" height="5" rx="1" />
+            </svg>
           </button>
           <button
             type="button"
             :class="toggleClass"
             :aria-pressed="settings.view === 'list'"
+            aria-label="List"
+            v-tooltip="'List'"
             @click="setView('list')"
           >
-            List
+            <svg viewBox="0 0 16 16" :class="iconClass" aria-hidden="true">
+              <path d="M2 4h12M2 8h12M2 12h12" />
+            </svg>
           </button>
         </div>
         <div
@@ -157,23 +171,26 @@ const toggleClass =
           role="group"
           aria-label="Titles"
         >
+          <!-- あ / A: the usual glyph pair for Japanese vs English text -->
           <button
             type="button"
             :class="toggleClass"
             :aria-pressed="settings.titleLanguage === 'romaji'"
+            aria-label="Japanese titles"
             v-tooltip="'Japanese titles in Latin letters (romaji)'"
             @click="settings.titleLanguage = 'romaji'"
           >
-            Japanese
+            <span :class="glyphClass" aria-hidden="true">あ</span>
           </button>
           <button
             type="button"
             :class="toggleClass"
             :aria-pressed="settings.titleLanguage === 'english'"
+            aria-label="English titles"
             v-tooltip="'English titles, or the Japanese one if there is none'"
             @click="settings.titleLanguage = 'english'"
           >
-            English
+            <span :class="glyphClass" aria-hidden="true">A</span>
           </button>
         </div>
       </div>
