@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import CheckGroup from "./CheckGroup.vue";
+import HiddenPanel from "./HiddenPanel.vue";
 import { AIRING, FORMATS, LIST_STATUSES, RELATIONS } from "../core/labels";
 import { clearCache } from "../core/cache";
 import { useSettings } from "../composables/useSettings";
 
-const { settings, resetFilters, clearExclusions } = useSettings();
+const { settings, resetFilters } = useSettings();
 const f = settings.filters;
 
 const keywords = computed({
@@ -78,20 +79,7 @@ const keywords = computed({
       />
     </label>
 
-    <div class="flex flex-col items-start gap-1 text-[13px] text-muted">
-      <span
-        >{{ f.excludedMedia.length }} entries and
-        {{ f.excludedFranchises.length }} franchises excluded</span
-      >
-      <button
-        type="button"
-        class="btn-link"
-        :disabled="!f.excludedMedia.length && !f.excludedFranchises.length"
-        @click="clearExclusions"
-      >
-        Show them again
-      </button>
-    </div>
+    <HiddenPanel />
     <button type="button" class="btn-link" @click="resetFilters">
       Reset filters
     </button>

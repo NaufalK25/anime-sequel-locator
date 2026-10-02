@@ -14,10 +14,21 @@ import { vTooltip } from "../directives/tooltip";
 import { smoothScrollTo } from "../composables/smoothScroll";
 
 const { state, franchises, visible } = useLocator();
-const { settings, excludeFranchise } = useSettings();
+const { settings, excludeFranchise, showMedia } = useSettings();
 const total = computed(() =>
   visible.value.reduce((n, f) => n + f.suggestions.length, 0),
 );
+
+// entries hidden with Hide in each shown franchise, so they can be restored there
+const hiddenIn = computed(() => {
+  const hidden = new Set(settings.filters.excludedMedia);
+  return new Map(
+    visible.value.map((fr) => [
+      fr.key,
+      fr.memberIds.filter((id) => hidden.has(id)),
+    ]),
+  );
+});
 
 // franchises currently showing their relation graph instead of entries
 const graphs = reactive(new Set<number>());
@@ -236,6 +247,14 @@ const glyphClass = "text-[15px] leading-none font-bold";
           @click="excludeFranchise(fr.key)"
         >
           Hide franchise
+        </button>
+        <button
+          v-if="hiddenIn.get(fr.key)?.length"
+          type="button"
+          class="btn-link"
+          @click="showMedia(hiddenIn.get(fr.key)!)"
+        >
+          Show {{ hiddenIn.get(fr.key)!.length }} hidden
         </button>
       </header>
       <FranchiseGraph v-if="graphs.has(fr.key)" :fr="fr" />

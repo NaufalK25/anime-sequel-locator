@@ -106,6 +106,16 @@ export function useSettings() {
     excludeMedia: (id: number) => toggleIn(settings.filters.excludedMedia, id),
     excludeFranchise: (id: number) =>
       toggleIn(settings.filters.excludedFranchises, id),
+    showMedia: (ids: number[]) => {
+      const drop = new Set(ids);
+      settings.filters.excludedMedia = settings.filters.excludedMedia.filter(
+        (id) => !drop.has(id),
+      );
+    },
+    showFranchise: (id: number) => {
+      settings.filters.excludedFranchises =
+        settings.filters.excludedFranchises.filter((x) => x !== id);
+    },
     resetFilters: () => {
       const { excludedMedia, excludedFranchises } = settings.filters;
       Object.assign(settings.filters, defaults().filters, {
