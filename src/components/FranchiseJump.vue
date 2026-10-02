@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, useId, useTemplateRef, watch } from "vue";
 import type { Franchise } from "../core/franchises";
+import { searchKey, titleMatches } from "../core/filters";
 import { titleOf } from "../composables/useSettings";
 
 // A searchable table of contents: type to narrow the franchises, pick one to
@@ -17,12 +18,10 @@ const list = useTemplateRef("list");
 
 // matches either title, whichever language is shown
 const matches = computed(() => {
-  const q = query.value.trim().toLowerCase();
+  const q = searchKey(query.value);
   if (!q) return props.franchises;
-  return props.franchises.filter(
-    (fr) =>
-      fr.main.title.toLowerCase().includes(q) ||
-      !!fr.main.titleEnglish?.toLowerCase().includes(q),
+  return props.franchises.filter((fr) =>
+    titleMatches(fr.main.title, fr.main.titleEnglish, q),
   );
 });
 

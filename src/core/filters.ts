@@ -58,6 +58,30 @@ export function sortFranchises(
   return [...franchises].sort(cmp[sort]);
 }
 
+/**
+ * Text reduced to lowercase letters and digits, so searches ignore spaces,
+ * punctuation and accents: "kaguyasama" finds "Kaguya-sama", "kyoto" finds
+ * "Kyōto". NFKD also folds full-width characters to their plain forms.
+ */
+export function searchKey(text: string): string {
+  return text
+    .normalize("NFKD")
+    .replace(/[^\p{L}\p{N}]/gu, "")
+    .toLowerCase();
+}
+
+/** Whether either title contains `key`, a query already passed through searchKey. */
+export function titleMatches(
+  title: string,
+  titleEnglish: string | null,
+  key: string,
+): boolean {
+  return (
+    searchKey(title).includes(key) ||
+    (titleEnglish !== null && searchKey(titleEnglish).includes(key))
+  );
+}
+
 /** Breadth-first hop counts from `starts`, never walking through `blocked`. */
 function hopsFrom(
   starts: number[],
@@ -93,7 +117,7 @@ export function applyFilters(
   const keywords = f.titleExclude
     .map((k) => k.trim().toLowerCase())
     .filter(Boolean);
-  const q = f.search.trim().toLowerCase();
+  const q = searchKey(f.search);
 
   const titleOf = (t: string, en: string | null) =>
     `${t} ${en ?? ""}`.toLowerCase();
@@ -105,11 +129,9 @@ export function applyFilters(
       .filter(
         (fr) =>
           !q ||
-          fr.watched.some((w) =>
-            titleOf(w.title, w.titleEnglish).includes(q),
-          ) ||
+          fr.watched.some((w) => titleMatches(w.title, w.titleEnglish, q)) ||
           fr.suggestions.some((s) =>
-            titleOf(s.media.title, s.media.titleEnglish).includes(q),
+            titleMatches(s.media.title, s.media.titleEnglish, q),
           ),
       )
       .map((fr) => {
