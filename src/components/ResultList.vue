@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, reactive, useTemplateRef } from "vue";
 import EntryCard from "./EntryCard.vue";
+import EntryPoster from "./EntryPoster.vue";
 import EntryRow from "./EntryRow.vue";
 import FranchiseGraph from "./FranchiseGraph.vue";
 import FranchiseJump from "./FranchiseJump.vue";
@@ -132,16 +133,32 @@ const glyphClass = "text-[15px] leading-none font-bold";
           <button
             type="button"
             :class="toggleClass"
+            :aria-pressed="settings.view === 'posters'"
+            aria-label="Posters"
+            v-tooltip="'Posters: covers only, click one for details'"
+            @click="setView('posters')"
+          >
+            <svg viewBox="0 0 16 16" :class="iconClass" aria-hidden="true">
+              <rect x="1.5" y="1.75" width="3.5" height="5.5" rx="0.75" />
+              <rect x="6.25" y="1.75" width="3.5" height="5.5" rx="0.75" />
+              <rect x="11" y="1.75" width="3.5" height="5.5" rx="0.75" />
+              <rect x="1.5" y="8.75" width="3.5" height="5.5" rx="0.75" />
+              <rect x="6.25" y="8.75" width="3.5" height="5.5" rx="0.75" />
+              <rect x="11" y="8.75" width="3.5" height="5.5" rx="0.75" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            :class="toggleClass"
             :aria-pressed="settings.view === 'cards'"
             aria-label="Cards"
-            v-tooltip="'Cards'"
+            v-tooltip="'Cards: cover with details'"
             @click="setView('cards')"
           >
             <svg viewBox="0 0 16 16" :class="iconClass" aria-hidden="true">
-              <rect x="2" y="2" width="5" height="5" rx="1" />
-              <rect x="9" y="2" width="5" height="5" rx="1" />
-              <rect x="2" y="9" width="5" height="5" rx="1" />
-              <rect x="9" y="9" width="5" height="5" rx="1" />
+              <rect x="2" y="2" width="4" height="5" rx="1" />
+              <rect x="2" y="9" width="4" height="5" rx="1" />
+              <path d="M8.5 3.5h5.5M8.5 5.5h3.5M8.5 10.5h5.5M8.5 12.5h3.5" />
             </svg>
           </button>
           <button
@@ -263,6 +280,12 @@ const glyphClass = "text-[15px] leading-none font-bold";
         class="overflow-hidden rounded-[10px] bg-surface"
       >
         <EntryRow v-for="s in fr.suggestions" :key="s.media.id" :s="s" />
+      </ul>
+      <ul
+        v-else-if="settings.view === 'posters'"
+        class="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3 max-sm:grid-cols-[repeat(auto-fill,minmax(110px,1fr))]"
+      >
+        <EntryPoster v-for="s in fr.suggestions" :key="s.media.id" :s="s" />
       </ul>
       <ul
         v-else

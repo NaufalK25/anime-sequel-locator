@@ -11,7 +11,7 @@ export interface Settings {
   follow: RelationType[];
   crawlDepth: number;
   cacheTtlHours: number;
-  // how results are laid out: cover cards or a compact list
+  // how results are laid out: a poster grid, cover cards or a compact list
   view: ResultView;
   // franchise order; like `view`, not reset with the filters
   sort: FranchiseSort;
@@ -21,7 +21,7 @@ export interface Settings {
   filters: ViewFilters;
 }
 
-export type ResultView = "cards" | "list";
+export type ResultView = "posters" | "cards" | "list";
 /** romaji is AniList's main title (Japanese in Latin letters) */
 export type TitleLanguage = "romaji" | "english";
 
