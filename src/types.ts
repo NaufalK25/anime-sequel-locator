@@ -46,8 +46,15 @@ export interface MediaNode {
   status: MediaStatus | null;
   episodes: number | null;
   seasonYear: number | null;
-  cover: string | null;
+  cover: Cover | null;
   siteUrl: string;
+}
+
+/** AniList's cover in each size it has; see coverImage() in core/covers.ts */
+export interface Cover {
+  medium: string | null;
+  large: string | null;
+  extraLarge: string | null;
 }
 
 export interface Relation {

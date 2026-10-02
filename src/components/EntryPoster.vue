@@ -18,6 +18,7 @@ import { label } from "../core/labels";
 import { otherTitleOf, titleOf, useSettings } from "../composables/useSettings";
 import type { Suggestion } from "../core/franchises";
 import { vTooltip } from "../directives/tooltip";
+import { coverImage } from "../core/covers";
 
 const props = defineProps<{ s: Suggestion }>();
 const { excludeMedia } = useSettings();
@@ -26,13 +27,7 @@ const m = props.s.media;
 const GAP = 8; // px between poster and details
 const MARGIN = 8; // px kept clear of the viewport edges
 
-// Only the medium cover is fetched, which is blurry at poster size. AniList
-// keeps the large one under the same file name, so swap the folder; fall back
-// to the medium one if that ever fails.
-const src = ref(m.cover?.replace("/cover/medium/", "/cover/large/") ?? null);
-const onError = () => {
-  if (src.value !== m.cover) src.value = m.cover;
-};
+const img = coverImage(m.cover);
 
 // Hovering shows only the title (a tooltip, so neighbouring posters stay in
 // view); clicking or tapping the poster opens the details beside it. They
@@ -131,13 +126,16 @@ onBeforeUnmount(() => {
       v-tooltip="open ? null : titleOf(m)"
       @click="toggle"
     >
+      <!-- the grid is 110 to ~280px wide per poster; 34vw covers three
+           columns on phones -->
       <img
-        v-if="src"
+        v-if="img"
         class="size-full object-cover"
-        :src="src"
+        :src="img.src"
+        :srcset="img.srcset"
+        sizes="(max-width: 640px) 34vw, 200px"
         alt=""
         loading="lazy"
-        @error="onError"
       />
       <!-- no cover: the title is all there is to show -->
       <span
@@ -168,9 +166,11 @@ onBeforeUnmount(() => {
       :style="pos && { transform: `translate(${pos.left}px, ${pos.top}px)` }"
     >
       <img
-        v-if="src"
+        v-if="img"
         class="aspect-23/32 w-26 shrink-0 self-start rounded-md bg-line object-cover"
-        :src="src"
+        :src="img.src"
+        :srcset="img.srcset"
+        sizes="104px"
         alt=""
       />
       <div class="flex min-w-0 flex-col gap-0.5">

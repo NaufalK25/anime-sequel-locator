@@ -1,5 +1,6 @@
 import { createLimiter, sleep } from "../core/rateLimiter";
 import type {
+  Cover,
   ListStatus,
   MediaFormat,
   MediaNode,
@@ -13,7 +14,7 @@ const ENDPOINT = "https://graphql.anilist.co";
 // AniList documents 90 req/min but has run in a degraded 30/min mode; stay polite.
 const limiter = createLimiter(1000);
 
-const NODE = `id idMal type format status episodes seasonYear siteUrl title { romaji english } coverImage { medium }`;
+const NODE = `id idMal type format status episodes seasonYear siteUrl title { romaji english } coverImage { medium large extraLarge }`;
 
 interface RawNode {
   id: number;
@@ -25,7 +26,7 @@ interface RawNode {
   seasonYear: number | null;
   siteUrl: string;
   title: { romaji: string | null; english: string | null };
-  coverImage: { medium: string | null } | null;
+  coverImage: Cover | null;
 }
 
 function toNode(r: RawNode): MediaNode {
@@ -38,7 +39,7 @@ function toNode(r: RawNode): MediaNode {
     status: r.status,
     episodes: r.episodes,
     seasonYear: r.seasonYear,
-    cover: r.coverImage?.medium ?? null,
+    cover: r.coverImage,
     siteUrl: r.siteUrl,
   };
 }

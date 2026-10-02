@@ -2,10 +2,12 @@
 import { label } from "../core/labels";
 import { otherTitleOf, titleOf, useSettings } from "../composables/useSettings";
 import type { Suggestion } from "../core/franchises";
+import { coverImage } from "../core/covers";
 
 const props = defineProps<{ s: Suggestion }>();
 const { excludeMedia } = useSettings();
 const m = props.s.media;
+const img = coverImage(m.cover);
 </script>
 
 <template>
@@ -14,9 +16,11 @@ const m = props.s.media;
     :class="{ '[border-left-style:dashed]': m.status === 'NOT_YET_RELEASED' }"
   >
     <img
-      v-if="m.cover"
+      v-if="img"
       class="h-22.5 w-16 shrink-0 rounded-md bg-line object-cover"
-      :src="m.cover"
+      :src="img.src"
+      :srcset="img.srcset"
+      sizes="64px"
       alt=""
       loading="lazy"
     />

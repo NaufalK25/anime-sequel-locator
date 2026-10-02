@@ -26,13 +26,17 @@ export interface Graph {
   via: Map<number, { from: number; type: RelationType }>;
 }
 
+// cache key prefix; bump it when MediaWithRelations changes shape
+// (rel2: covers became an object with every size)
+const REL = "rel2:";
+
 async function relationsFor(
   ids: number[],
   opts: CrawlOptions,
   label: string,
 ): Promise<MediaWithRelations[]> {
   const cached = await cacheGetMany<MediaWithRelations>(
-    ids.map((id) => `rel:${id}`),
+    ids.map((id) => `${REL}${id}`),
     opts.cacheTtlMs,
   );
   const hits = cached.filter((c): c is MediaWithRelations => Boolean(c));
@@ -46,7 +50,7 @@ async function relationsFor(
     );
   });
   await cacheSetMany(
-    fresh.map((m) => [`rel:${m.id}`, m] as [string, MediaWithRelations]),
+    fresh.map((m) => [`${REL}${m.id}`, m] as [string, MediaWithRelations]),
   );
   return [...hits, ...fresh];
 }
