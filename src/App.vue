@@ -3,6 +3,7 @@ import { onBeforeUnmount, onMounted, ref, useTemplateRef } from "vue";
 import UserForm from "./components/UserForm.vue";
 import FilterPanel from "./components/FilterPanel.vue";
 import ResultList from "./components/ResultList.vue";
+import { smoothScrollTo } from "./composables/smoothScroll";
 
 // The header's height changes (status line, wrapping), and the filter panel
 // pins itself right below it, so expose it as --header-h.
@@ -29,10 +30,7 @@ function onSheetClick(e: MouseEvent) {
 // "Back to top" appears once the page is scrolled past one screen.
 const scrolledDown = ref(false);
 const syncScrolled = () => (scrolledDown.value = window.scrollY > innerHeight);
-function backToTop() {
-  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
-}
+const backToTop = () => smoothScrollTo(() => 0);
 
 onMounted(() => {
   if (header.value) observer.observe(header.value);

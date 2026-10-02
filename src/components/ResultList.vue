@@ -11,6 +11,7 @@ import {
   type ResultView,
 } from "../composables/useSettings";
 import { vTooltip } from "../directives/tooltip";
+import { smoothScrollTo } from "../composables/smoothScroll";
 
 const { state, franchises, visible } = useLocator();
 const { settings, excludeFranchise } = useSettings();
@@ -47,19 +48,14 @@ function jumpTo(key: number) {
   const article = document.getElementById(`franchise-${key}`);
   const b = bar.value;
   if (!article || !b) return;
-  const stuckBottom = parseFloat(getComputedStyle(b).top) + b.offsetHeight;
-  const y = article.getBoundingClientRect().top + window.scrollY;
-  // Move keyboard focus too, so Tab continues from that franchise. It goes
-  // first: moving focus cancels a smooth scroll that's already running, and
-  // the scroll waits a frame so the closing dropdown can't cancel it either.
+  // Move keyboard focus too, so Tab continues from that franchise.
   article.querySelector("h2")?.focus({ preventScroll: true });
-  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  requestAnimationFrame(() =>
-    window.scrollTo({
-      top: y - stuckBottom - 12,
-      behavior: reduce ? "auto" : "smooth",
-    }),
-  );
+  // measured every frame, so the scroll still lands if the layout shifts
+  smoothScrollTo(() => {
+    const stuckBottom = parseFloat(getComputedStyle(b).top) + b.offsetHeight;
+    const y = article.getBoundingClientRect().top + window.scrollY;
+    return y - stuckBottom - 12;
+  });
 }
 
 const toggleClass =
