@@ -3,6 +3,7 @@ import { computed, nextTick, reactive, useTemplateRef } from "vue";
 import EntryCard from "./EntryCard.vue";
 import EntryRow from "./EntryRow.vue";
 import FranchiseGraph from "./FranchiseGraph.vue";
+import FranchiseJump from "./FranchiseJump.vue";
 import { useLocator } from "../composables/useLocator";
 import {
   titleOf,
@@ -61,13 +62,6 @@ function jumpTo(key: number) {
   );
 }
 
-function onJump(e: Event) {
-  const select = e.target as HTMLSelectElement;
-  if (select.value) jumpTo(Number(select.value));
-  // back to the placeholder, so picking the same franchise again still jumps
-  select.value = "";
-}
-
 const toggleClass =
   "grid size-7.5 place-items-center rounded-full text-muted transition-colors duration-150 hover:text-ink aria-pressed:bg-surface aria-pressed:text-ink";
 const iconClass =
@@ -109,17 +103,7 @@ const glyphClass = "text-[15px] leading-none font-bold";
           aria-label="Search anime in your results"
         />
         <!-- table of contents: every shown franchise, in the current order -->
-        <select
-          class="field picker max-w-full min-w-0 basis-60 py-1.5 text-ink"
-          aria-label="Jump to franchise"
-          @change="onJump"
-        >
-          <!-- the label shown when closed; hidden from the open list -->
-          <option value="" selected hidden>Jump to franchise…</option>
-          <option v-for="fr in visible" :key="fr.key" :value="fr.key">
-            {{ titleOf(fr.main) }} ({{ fr.suggestions.length }})
-          </option>
-        </select>
+        <FranchiseJump :franchises="visible" @jump="jumpTo" />
       </div>
       <p>{{ total }} entries across {{ visible.length }} franchises</p>
       <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
